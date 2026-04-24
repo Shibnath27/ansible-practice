@@ -274,11 +274,3 @@ ansible all -m ping
 * Configuration management ensures consistency and reliability
 
 ---
-
-## Next Steps
-
-* Convert ad-hoc commands into **playbooks**
-* Integrate Ansible with Terraform
-* Automate full application deployment
-
----
