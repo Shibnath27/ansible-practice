@@ -104,7 +104,14 @@ roles/
     meta/
       main.yml
 ```
+Every directory contains a main.yml that Ansible loads automatically. You only create the directories you need.
 
+Generate a skeleton with:
+
+```
+ansible-galaxy init roles/webserver
+
+```
 ### vars vs defaults
 
 | Type     | Priority | Use Case       |
