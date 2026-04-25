@@ -320,12 +320,3 @@ Each play targets a different group → clean separation of concerns.
 * Multi-play design improves scalability
 
 ---
-
-## Next Steps
-
-* Convert playbooks into **roles**
-* Introduce variables and templates (Jinja2)
-* Integrate Ansible with Terraform pipeline
-* Build full application deployment automation
-
----
