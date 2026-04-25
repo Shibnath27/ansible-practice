@@ -51,7 +51,8 @@ Instead of static automation, playbooks now adapt based on:
 ### CLI Override
 
 ```
-ansible-playbook variables-demo.yml -e "app_name=my-custom-app app_port=9090"
+ansible-playbook variables-demo.yml -e "app_name=my-custom-app app_port=9090 app_dir=app packages=docker" -i ../inventory.ini --become
+
 ```
 
 ### Observation
@@ -65,7 +66,7 @@ CLI variables override playbook-defined variables.
 ### Directory Structure
 
 ```
-ansible-practice/
+day-03/
 ├── inventory.ini
 ├── ansible.cfg
 ├── group_vars/
