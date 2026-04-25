@@ -50,7 +50,7 @@ A playbook is a **YAML-based declarative configuration file** that defines:
 ### Execution
 
 ```
-ansible-playbook install-nginx.yml
+ansible-playbook -i ../inventory.ini install-nginx.yml
 ```
 
 ### Key Observation – Idempotency
