@@ -1,0 +1,29 @@
+---
+- name: Configure web servers
+  hosts: web
+  become: true
+  tasks:
+    - name: Install Nginx
+      yum:
+        name: nginx
+        state: present
+
+- name: Configure app servers
+  hosts: app
+  become: true
+  tasks:
+    - name: Install dependencies
+      yum:
+        name:
+          - gcc
+          - make
+        state: present
+
+- name: Configure db servers
+  hosts: db
+  become: true
+  tasks:
+    - name: Install MySQL client
+      yum:
+        name: mariadb105
+        state: present

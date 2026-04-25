@@ -1,0 +1,28 @@
+---
+- name: Configure Nginx
+  hosts: web
+  become: true
+
+  tasks:
+    - name: Install Nginx
+      yum:
+        name: nginx
+        state: present
+
+    - name: Deploy config
+      copy:
+        src: files/nginx.conf
+        dest: /etc/nginx/nginx.conf
+      notify: Restart Nginx
+
+    - name: Ensure Nginx running
+      service:
+        name: nginx
+        state: started
+        enabled: true
+
+  handlers:
+    - name: Restart Nginx
+      service:
+        name: nginx
+        state: restarted
