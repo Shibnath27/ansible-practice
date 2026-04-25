@@ -300,7 +300,7 @@ ansible-playbook install-nginx.yml --limit web-server
   tasks:
     - name: Install MySQL client
       yum:
-        name: mysql
+        name: mariadb105
         state: present
 ```
 
