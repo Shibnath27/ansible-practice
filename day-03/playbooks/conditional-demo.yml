@@ -1,0 +1,32 @@
+---
+- name: Conditional tasks demo
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Install Nginx (web only)
+      yum:
+        name: nginx
+        state: present
+      when: "'web' in group_names"
+
+    - name: Install MySQL (db only)
+      yum:
+        name: mysql-server
+        state: present
+      when: "'db' in group_names"
+
+    - name: Low memory warning
+      debug:
+        msg: "WARNING: Less than 1GB RAM"
+      when: ansible_memtotal_mb < 1024
+
+    - name: Amazon Linux check
+      debug:
+        msg: "Amazon Linux system"
+      when: ansible_distribution == "Amazon"
+
+    - name: Production check
+      debug:
+        msg: "Production settings applied"
+      when: app_env == "production"
