@@ -74,7 +74,7 @@ server {
 Run it with --diff to see the rendered template:
 
 ```
-ansible-playbook template-demo.yml --diff
+ansible-playbook template-demo.yml --diff -i ../inventory.ini
 ```
 ### Key Insight
 
@@ -183,7 +183,7 @@ max_connections: 512
     state: restarted
 ```
 
-### index.html.j2
+### templates/index.html.j2
 
 ```html
 <h1>{{ app_name }}</h1>
@@ -191,9 +191,11 @@ max_connections: 512
 <p>IP: {{ ansible_default_ipv4.address }}</p>
 <p>Env: {{ app_env | default('dev') }}</p>
 ```
+Create the vhost.conf.j2 and nginx.conf.j2 templates yourself based on what you learned in Task 1.
+
 
 ### Playbook Usage
-
+Now call the role from a playbook site.yml:
 ```yaml
 ---
 - name: Configure web servers
@@ -204,19 +206,34 @@ max_connections: 512
     - role: webserver
       vars:
         app_name: terraweek
+        http_port: 80
 ```
+Run it:
 
+```bash
+ ansible-playbook site.yml -i ../inventory.ini
+```
+Verify: Curl the web server. Does the custom page load?
 ---
 
 ## Task 4 – Ansible Galaxy
 
-### Install Role
+Ansible Galaxy is a marketplace of pre-built roles.
 
+1. Search for roles:
+```
+ansible-galaxy search nginx --platforms EL
+ansible-galaxy search mysql
+```
+2. Install a role from Galaxy:
 ```
 ansible-galaxy install geerlingguy.docker
 ```
-
-### Use Role
+3. Check where it was installed:
+```
+ansible-galaxy list
+```
+4. Use the installed role -- create docker-setup.yml:
 
 ```yaml
 ---
@@ -227,8 +244,9 @@ ansible-galaxy install geerlingguy.docker
   roles:
     - geerlingguy.docker
 ```
+Run it -- Docker gets installed with a single role call.
 
-### requirements.yml
+5. Use a requirements file for managing multiple roles. Create requirements.yml:
 
 ```yaml
 ---
