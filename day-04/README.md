@@ -273,80 +273,118 @@ ansible-galaxy install -r requirements.yml
 
 ## Task 5 – Ansible Vault
 
-### Create Vault
-
-```
+1. **Create an encrypted file:**
+```bash
 ansible-vault create group_vars/db/vault.yml
 ```
-
-### Example Content
-
+It will ask for a vault password, then open an editor. Add:
 ```yaml
-vault_db_password: SuperSecretP@ss
-vault_db_root_password: RootPass123
-vault_api_key: sk-xyz123
+vault_db_password: SuperSecretP@ssw0rd
+vault_db_root_password: R00tP@ssw0rd123
+vault_api_key: sk-abc123xyz789
+```
+Save and exit. Open the file with `cat` -- it is fully encrypted.
+
+2. **Edit an encrypted file:**
+```bash
+ansible-vault edit group_vars/db/vault.yml
 ```
 
-### Run Playbook
-
+3. **View without editing:**
+```bash
+ansible-vault view group_vars/db/vault.yml
 ```
+
+4. **Encrypt an existing file:**
+```bash
+ansible-vault encrypt group_vars/db/secrets.yml
+```
+
+5. **Use vault variables in a playbook** -- create `db-setup.yml`:
+```yaml
+---
+- name: Configure database
+  hosts: db
+  become: true
+
+  tasks:
+    - name: Show DB password (never do this in production)
+      debug:
+        msg: "DB password is set: {{ vault_db_password | length > 0 }}"
+```
+
+Run with the vault password:
+```bash
 ansible-playbook db-setup.yml --ask-vault-pass
 ```
 
-### Using Password File
+6. **Use a password file** (better for CI/CD):
+```bash
+echo "YourVaultPassword" > .vault_pass
+chmod 600 .vault_pass
+echo ".vault_pass" >> .gitignore
 
-```
 ansible-playbook db-setup.yml --vault-password-file .vault_pass
 ```
 
-### Why password file?
+Or set it in `ansible.cfg`:
+```ini
+[defaults]
+vault_password_file = .vault_pass
+```
 
-* Required for automation (CI/CD)
-* No manual input
-* Secure when properly permissioned
+**Document:** Why is `--vault-password-file` better than `--ask-vault-pass` for automated pipelines?
 
 ---
 
-## Task 6 – Full Integration
-
-### site.yml
+### Task 6: Combine Roles, Templates, and Vault
+Write a complete `site.yml` that uses everything you learned today:
 
 ```yaml
 ---
-- name: Configure web
+- name: Configure web servers
   hosts: web
   become: true
   roles:
     - role: webserver
       vars:
         app_name: terraweek
+        http_port: 80
 
-- name: Configure app
+- name: Configure app servers with Docker
   hosts: app
   become: true
   roles:
     - geerlingguy.docker
 
-- name: Configure DB
+- name: Configure database servers
   hosts: db
   become: true
-
   tasks:
-    - name: Deploy DB config
+    - name: Create DB config with secrets
       template:
         src: templates/db-config.j2
         dest: /etc/db-config.env
+        owner: root
         mode: '0600'
 ```
 
-### db-config.j2
-
+Create `templates/db-config.j2`:
 ```jinja2
+# Database Configuration -- Managed by Ansible
 DB_HOST={{ ansible_default_ipv4.address }}
 DB_PORT={{ db_port | default(3306) }}
 DB_PASSWORD={{ vault_db_password }}
 DB_ROOT_PASSWORD={{ vault_db_root_password }}
 ```
+
+Run:
+```bash
+ansible-playbook site1.yml -i ../inventory.ini --vault-password-file ../.vault_pass
+
+```
+
+**Verify:** SSH into the db server and check `/etc/db-config.env`. Are the secrets rendered correctly? Is the file permission `600`?
 
 ---
 
