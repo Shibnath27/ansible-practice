@@ -38,6 +38,7 @@ Managed Nodes (EC2)
 ---
 # Flow-Diagram
 
+<img width="1536" height="1024" alt="ChatGPT Image Apr 27, 2026, 12_23_34 PM" src="https://github.com/user-attachments/assets/20e52b02-c903-464d-ba6f-cd2c8ff2c6f3" />
 
 
 ---
